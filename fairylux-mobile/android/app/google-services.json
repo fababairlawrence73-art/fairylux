@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "80924638878",
+    "project_id": "fairylux",
+    "storage_bucket": "fairylux.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:80924638878:android:b13200947e62ca2498458f",
+        "android_client_info": {
+          "package_name": "com.fairyluxmobile"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "80924638878-82cqqgln5djccoldf2ndhfdlse3agb80.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.fairyluxmobile",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "80924638878-40qi0gqetestqi2dbvverji4n62on9a0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAZsS2trkeBBBnqXiiuNy56G2xihOm1Ip8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "80924638878-40qi0gqetestqi2dbvverji4n62on9a0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
