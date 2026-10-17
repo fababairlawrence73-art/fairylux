@@ -2,6 +2,57 @@
 
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
+
+Artisan::command('fairylux:database', function () {
+    if (! app()->environment('local', 'testing')) {
+        $this->error('This setup command is only available in local/testing environments.');
+        return 1;
+    }
+
+    $connection = config('database.default');
+    $settings = config("database.connections.{$connection}");
+    $database = $settings['database'] ?? '';
+
+    if ($connection === 'sqlite') {
+        if ($database !== ':memory:' && ! File::exists($database)) {
+            File::ensureDirectoryExists(dirname($database));
+            File::put($database, '');
+        }
+    } elseif ($connection === 'mysql') {
+        if (! preg_match('/^[a-zA-Z0-9_]+$/', $database)) {
+            $this->error('DB_DATABASE must contain only letters, numbers and underscores.');
+            return 1;
+        }
+        try {
+            DB::connection()->getPdo();
+            $this->info("Database [{$database}] is ready. Existing data has been preserved.");
+            return 0;
+        } catch (\PDOException $exception) {
+            if ((int) ($exception->errorInfo[1] ?? 0) !== 1049) {
+                throw $exception;
+            }
+        }
+        // Connect to the server without selecting a database first.
+        $settings['database'] = null;
+        $settings['url'] = null;
+        config(['database.connections.fairylux_setup' => $settings]);
+        try {
+            DB::connection('fairylux_setup')->statement(
+                "CREATE DATABASE IF NOT EXISTS `{$database}` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"
+            );
+        } finally {
+            DB::purge('fairylux_setup');
+        }
+    } else {
+        $this->error('Local setup supports MySQL/MariaDB or SQLite. Check DB_CONNECTION in .env.');
+        return 1;
+    }
+
+    $this->info("Database [{$database}] is ready. Existing data has been preserved.");
+    return 0;
+})->purpose('Create the local FairyLux database if it does not exist');
 
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());

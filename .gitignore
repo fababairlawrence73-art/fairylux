@@ -1,0 +1,14 @@
+# Local setup, credentials and generated artifacts
+.env
+.env.*
+!.env.example
+*service-account*.json
+*firebase-adminsdk*.json
+*.pem
+*.key
+.handoff-check/
+.local/
+.local-*.log
+scratch_*.png
+**/scratch_*.png
+**/screen.png

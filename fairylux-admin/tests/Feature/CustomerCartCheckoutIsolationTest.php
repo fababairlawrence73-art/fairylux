@@ -11,7 +11,9 @@ use App\Models\ProductVariant;
 use App\Models\Role;
 use App\Models\Size;
 use App\Models\User;
+use App\Services\FirebaseTokenService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Auth;
 use Tests\TestCase;
 
 class CustomerCartCheckoutIsolationTest extends TestCase
@@ -30,6 +32,15 @@ class CustomerCartCheckoutIsolationTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+
+        // Exercise the Firebase middleware while replacing external token verification.
+        // Each actingAs call still selects the customer whose cart/orders are tested.
+        $this->withHeader('Authorization', 'Bearer test-firebase-token');
+        $this->mock(FirebaseTokenService::class, function ($mock) {
+            $mock->shouldReceive('verifyIdToken')->with('test-firebase-token')
+                ->andReturn((object) ['sub' => 'test-customer']);
+            $mock->shouldReceive('resolveUser')->andReturnUsing(fn () => Auth::user());
+        });
 
         $adminRole = Role::create(['name' => 'Administrator', 'slug' => 'admin', 'description' => 'Admin']);
         $customerRole = Role::create(['name' => 'Customer', 'slug' => 'customer', 'description' => 'Customer']);

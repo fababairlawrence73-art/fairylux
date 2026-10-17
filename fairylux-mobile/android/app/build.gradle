@@ -80,7 +80,15 @@ android {
 
     externalNativeBuild {
         cmake {
-            buildStagingDirectory file("C:/tmp/fairylux-cxx")
+            // Ninja on Windows needs a genuinely short path, including for long usernames.
+            // Use the checkout's drive rather than a machine-specific C:/tmp path.
+            def checkoutId = Integer.toHexString(rootDir.absolutePath.hashCode())
+            def stagingRoot = System.getenv('FAIRYLUX_NATIVE_BUILD_DIR') ?: (
+                System.getProperty('os.name').toLowerCase().contains('windows')
+                    ? "${rootDir.toPath().root}flx"
+                    : "${System.getProperty('java.io.tmpdir')}/flx"
+            )
+            buildStagingDirectory file("${stagingRoot}/${checkoutId}")
         }
     }
 
@@ -91,6 +99,11 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
+        externalNativeBuild {
+            cmake {
+                arguments "-DCMAKE_OBJECT_PATH_MAX=240"
+            }
+        }
     }
     signingConfigs {
         debug {

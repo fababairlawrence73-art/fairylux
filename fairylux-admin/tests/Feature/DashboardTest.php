@@ -105,6 +105,10 @@ class DashboardTest extends TestCase
                 ->where('out_of_stock_products', 1)
                 ->where('total_categories', 1)
                 ->where('active_categories', 1)
+                ->where('total_sales_revenue', 0)
+                ->where('total_orders', 0)
+                ->where('pending_orders', 0)
+                ->where('total_customers', 0)
             )
             ->has('inventory_alerts', 2)
         );

@@ -152,7 +152,7 @@ class DatabaseSeeder extends Seeder
         }
 
         // 6. Products Catalog (5 products per category = 25 gowns)
-        // Images left empty/null per instructions: "Do NOT add actual product images to the seeded products."
+        // Product photos are installed by ProductImageSeeder after the catalog is created.
         $catalog = [
             // --- WEDDING GOWNS (5 products) ---
             [
@@ -652,7 +652,7 @@ class DatabaseSeeder extends Seeder
             $cat = $categories[$item['category_slug']];
             $slug = Str::slug($item['name']);
 
-            $product = Product::updateOrCreate(
+            $product = Product::firstOrCreate(
                 ['sku' => $item['sku']],
                 [
                     'category_id' => $cat->id,
@@ -666,8 +666,6 @@ class DatabaseSeeder extends Seeder
                     'is_featured' => $item['is_featured'],
                     'description' => $item['description'],
                     'short_description' => $item['short_description'],
-                    'featured_image' => null, // Empty per prompt: "Do NOT add actual product images yet"
-                    'images' => [],
                 ]
             );
 
@@ -678,7 +676,7 @@ class DatabaseSeeder extends Seeder
                 $colorCode = $colorCodes[$v['color']] ?? strtoupper(substr($v['color'], 0, 3));
                 $variantSku = "{$product->sku}-{$v['size']}-{$colorCode}";
 
-                $variant = ProductVariant::updateOrCreate(
+                $variant = ProductVariant::firstOrCreate(
                     [
                         'product_id' => $product->id,
                         'size_id' => $sizeModel->id,
@@ -688,7 +686,6 @@ class DatabaseSeeder extends Seeder
                         'sku' => $variantSku,
                         'price' => $v['price'],
                         'stock_quantity' => $v['stock'],
-                        'image_path' => null,
                         'is_active' => true,
                     ]
                 );
@@ -708,5 +705,7 @@ class DatabaseSeeder extends Seeder
                 );
             }
         }
+
+        $this->call(ProductImageSeeder::class);
     }
 }
